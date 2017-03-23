@@ -9,25 +9,33 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
 
 public class KnightsTourPanel extends JPanel {
 
 	private static final int SQUARE_SIZE = 80;
 	private static final int ROWS = 8;
 	private static final int COLS = 8;
-	private static final Dimension PANEL_DIMENSIONS = new Dimension(ROWS * SQUARE_SIZE, COLS * SQUARE_SIZE + 60);
+	private static final Dimension PANEL_DIMENSIONS = new Dimension(ROWS * SQUARE_SIZE, COLS * SQUARE_SIZE + 80);
 	private final static int LINE_THICKNESS = 1;
 
 	private int currX;
 	private int currY;
 
 	private	KnightsTour knightsTour;
+	private KnightsTourControlPanel controlPanel;
 	private int[][] grid;
 
 	public KnightsTourPanel(KnightsTour knightsTour, int[][] grid) {
+		this.setLayout(new BorderLayout());
+		controlPanel = new KnightsTourControlPanel(PANEL_DIMENSIONS.width, 80);
+		controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.add(controlPanel, BorderLayout.SOUTH);
 		this.knightsTour = knightsTour;
 		this.grid = grid;
 		setPreferredSize(PANEL_DIMENSIONS);
+		setUpClickListener();
 	}
 
 		private void setUpClickListener() {
@@ -76,8 +84,32 @@ public class KnightsTourPanel extends JPanel {
 		repaint();
 	}
 
+	/* make random move just selects a new location at random
+	 * if the knight is trapped (no new locations to move to)
+	 * then false is returned.  Otherwise, true is returned.
+	 * The knight's location should be updated and the 
+	 */
+	public boolean makeRandomMove() {
+
+		return false;
+	}
+	/* make a move to a new location that ensures the best chance
+	 * for a complete traversal of the board.
+	 * if the knight is trapped (no new locations to move to)
+	 * then false is returned.  Otherwise, true is returned.
+	 */
+	public boolean makeThoughtfulMove() {
+
+		return false;
+	}
+
+	/* add the mouse listener.  This will only work for the 
+	 * first click, and then after the first click, there should
+	 * be no more mouse listening!
+	 */
 	@Override
 	public void paintComponent(Graphics g) {
+		super.paintComponent(g);
 		Graphics2D g2 = (Graphics2D) g;
 		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
@@ -89,13 +121,13 @@ public class KnightsTourPanel extends JPanel {
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
 				if (grid[r][c] == 1) {
-					// g.drawImage();
-					continue;
-				}
-				if ((c % 2) == (r % 2)) {
-					g2.setColor(new Color(117, 117, 117));
+					g2.setColor(new Color(0,0,0));
 				} else {
-					g2.setColor(new Color(189, 189, 189));
+					if ((c % 2) == (r % 2)) {
+						g2.setColor(new Color(117, 117, 117));
+					} else {
+						g2.setColor(new Color(189, 189, 189));
+					}
 				}
 				g2.fillRect(c * SQUARE_SIZE + LINE_THICKNESS, r * SQUARE_SIZE + LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS);		
 			}
@@ -106,7 +138,7 @@ public class KnightsTourPanel extends JPanel {
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
 				//	Draws the vertical line
-				g2.drawLine(SQUARE_SIZE * c, 0, SQUARE_SIZE * c, (PANEL_DIMENSIONS.height) - 60);
+				g2.drawLine(SQUARE_SIZE * c, 0, SQUARE_SIZE * c, (PANEL_DIMENSIONS.height) - 80);
 			}
 			//	Draws the horizontal line
 			g2.drawLine(0, (SQUARE_SIZE * r), PANEL_DIMENSIONS.width, (SQUARE_SIZE * r)); 
