@@ -109,7 +109,7 @@ public class KnightsTourControlPanel extends JPanel {
 
 	public void pause() {
 		startButton.setText("Start");
-		currentlyPlaying = false;
+		 currentlyPlaying = false;
 	}
 
 	boolean currentlyPlaying = false;

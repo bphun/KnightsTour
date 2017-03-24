@@ -59,7 +59,7 @@ public class KnightsTour {
 	}
 
 	private void startTimer() {
-		t = new Timer(500, new ActionListener() {
+		t = new Timer(10, new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				panel.refresh();
@@ -104,7 +104,9 @@ public class KnightsTour {
 	}
 
 	public void updateSpeed(int newSpeed) {
+		playTimer.stop();
 		playTimer.setDelay(newSpeed);
+		playTimer.start();
 	}
 
 	public void updateMode() {
@@ -124,8 +126,9 @@ public class KnightsTour {
 		int newCol;
 
 		while (true) {
-			if (numMovesAvailable() < 0) { 
+			if (numMovesAvailable() <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
+				
 				return false;
 			}
 			newRow = (int)(Math.random() * ROWS);
