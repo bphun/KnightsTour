@@ -25,15 +25,19 @@ public class KnightsTourPanel extends JPanel {
 
 	private	KnightsTour knightsTour;
 	private KnightsTourControlPanel controlPanel;
+
 	private int[][] grid;
+
+	private boolean canSelectSquare;
 
 	public KnightsTourPanel(KnightsTour knightsTour, int[][] grid) {
 		this.setLayout(new BorderLayout());
-		controlPanel = new KnightsTourControlPanel(PANEL_DIMENSIONS.width, 80);
+		controlPanel = new KnightsTourControlPanel(PANEL_DIMENSIONS.width, 80, knightsTour);
 		controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.knightsTour = knightsTour;
 		this.grid = grid;
+		canSelectSquare = true;
 		setPreferredSize(PANEL_DIMENSIONS);
 		setUpClickListener();
 	}
@@ -74,33 +78,13 @@ public class KnightsTourPanel extends JPanel {
 		int col = e.getX() / SQUARE_SIZE;
 		if (grid == null) { return; }
 
-		grid[currY][currX] = 0;
-
-		grid[row][col] = 1;
-
-		currY = row;
-		currX = col;
+		if (canSelectSquare) {
+			grid[row][col] = 1;
+			canSelectSquare = false;
+			knightsTour.setStartPosition(row, col);
+		}
 
 		repaint();
-	}
-
-	/* make random move just selects a new location at random
-	 * if the knight is trapped (no new locations to move to)
-	 * then false is returned.  Otherwise, true is returned.
-	 * The knight's location should be updated and the 
-	 */
-	public boolean makeRandomMove() {
-
-		return false;
-	}
-	/* make a move to a new location that ensures the best chance
-	 * for a complete traversal of the board.
-	 * if the knight is trapped (no new locations to move to)
-	 * then false is returned.  Otherwise, true is returned.
-	 */
-	public boolean makeThoughtfulMove() {
-
-		return false;
 	}
 
 	/* add the mouse listener.  This will only work for the 

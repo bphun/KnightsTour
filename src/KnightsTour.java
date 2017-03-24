@@ -18,8 +18,15 @@ public class KnightsTour {
 	private KnightsTourPanel panel;
 
 	private Timer t;
+	private Timer playTimer;
 
 	private int[][] grid;
+
+	private boolean randomMode;
+	private boolean shouldPlay;
+
+	private int currentRow;
+	private int currentCol;
 
 	public static void main(String[] args) {
 		new KnightsTour().start();
@@ -27,6 +34,7 @@ public class KnightsTour {
 
 	public void start() {
 		grid = new int[ROWS][COLS];
+		randomMode = false;
 		frame = new JFrame("Knights Tour");
 		panel = new KnightsTourPanel(this, grid);
 		frame.add(panel);	
@@ -34,6 +42,7 @@ public class KnightsTour {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		startTimer();
+		startPlayTimer();
 	}
 
 	private void startTimer() {
@@ -44,6 +53,59 @@ public class KnightsTour {
 			}
 		});
 		t.start();	
+	}
+
+	private void startPlayTimer() {
+		playTimer = new Timer(500, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				play();
+			}
+		});
+		playTimer.start();
+	}
+
+	public void setStartPosition(int row, int col) {
+		currentRow = row;
+		currentCol = col;
+	}
+
+	public void shouldPlay() {
+		shouldPlay = !shouldPlay;
+	}
+
+	public void step() {
+		if (randomMode) {
+			randomMove();
+		} else {
+			algorithmMove();
+		}
+	}
+
+	public void clear() {
+		this.grid = new int[ROWS][COLS];
+	}
+
+	public void updateSpeed(int newSpeed) {
+		playTimer.setDelay(newSpeed);
+	}
+
+	public void updateMode() {
+		randomMode = !randomMode;
+	}
+
+	public void play() {
+		if (shouldPlay) {
+			step();	
+		}
+	}
+
+	private void randomMove() {
+		
+	}
+
+	private void algorithmMove() {
+
 	}
 
 }
