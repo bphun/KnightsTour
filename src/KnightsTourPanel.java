@@ -27,22 +27,24 @@ public class KnightsTourPanel extends JPanel {
 	private KnightsTourControlPanel controlPanel;
 
 	private int[][] grid;
+	private int[][] iterations;
 
 	private boolean canSelectSquare;
 
-	public KnightsTourPanel(KnightsTour knightsTour, int[][] grid) {
+	public KnightsTourPanel(KnightsTour knightsTour, int[][] grid, int[][] iterations) {
 		this.setLayout(new BorderLayout());
 		controlPanel = new KnightsTourControlPanel(PANEL_DIMENSIONS.width, 80, knightsTour);
 		controlPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 		this.add(controlPanel, BorderLayout.SOUTH);
 		this.knightsTour = knightsTour;
 		this.grid = grid;
+		this.iterations = iterations;
 		canSelectSquare = true;
 		setPreferredSize(PANEL_DIMENSIONS);
 		setUpClickListener();
 	}
 
-		private void setUpClickListener() {
+	private void setUpClickListener() {
 		this.requestFocusInWindow();
 		this.addMouseListener(new MouseListener() {
 
@@ -80,11 +82,29 @@ public class KnightsTourPanel extends JPanel {
 
 		if (canSelectSquare) {
 			grid[row][col] = 1;
+			iterations[row][col] = 0;
 			canSelectSquare = false;
 			knightsTour.setStartPosition(row, col);
 		}
 
 		repaint();
+	}
+
+	public void setGrid(int[][] newGrid) {
+		this.grid = newGrid;
+		refresh();
+	}
+
+	public void refresh() {
+		repaint();
+	}
+
+	public void setIteration(int row, int col, int iteration) {
+		this.iterations[row][col] = iteration;
+	}
+
+	public void pause() {
+		controlPanel.pause();
 	}
 
 	/* add the mouse listener.  This will only work for the 
@@ -104,20 +124,26 @@ public class KnightsTourPanel extends JPanel {
 	private void fillSquares(Graphics2D g2) {
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
+				int iteration = iterations[r][c];
 				if (grid[r][c] == 1) {
 					g2.setColor(new Color(0,0,0));
-				} else {
-					if ((c % 2) == (r % 2)) {
-						g2.setColor(new Color(117, 117, 117));
-					} else {
-						g2.setColor(new Color(189, 189, 189));
-					}
+					g2.drawString("" + iteration, (c * SQUARE_SIZE) + (SQUARE_SIZE / 2), (r * SQUARE_SIZE) + (SQUARE_SIZE / 2));
 				}
-				g2.fillRect(c * SQUARE_SIZE + LINE_THICKNESS, r * SQUARE_SIZE + LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS);		
+				if ((c % 2) == (r % 2)) {
+					g2.setColor(new Color(117, 117, 117));
+				} else {
+					g2.setColor(new Color(189, 189, 189));
+				}
+				g2.fillRect(c * SQUARE_SIZE + LINE_THICKNESS, r * SQUARE_SIZE + LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS, SQUARE_SIZE - LINE_THICKNESS);
+				if (iteration > -1) {
+					g2.setColor(Color.BLACK);	
+					g2.drawString("" + iteration, (c * SQUARE_SIZE) + (SQUARE_SIZE / 2), (r * SQUARE_SIZE) + (SQUARE_SIZE / 2));
+				}				
 			}
 		}
 		g2.setColor(Color.BLACK);
 	}
+
 	private void drawGrid(Graphics2D g2) {
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
