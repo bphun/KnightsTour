@@ -48,6 +48,7 @@ public class KnightsTourControlPanel extends JPanel {
 		randomModeRadioButton = new JRadioButton("Random Mode");
 		algorithmModeRadioButton = new JRadioButton("Algorithm Mode");
 
+		randomModeRadioButton.setSelected(true);
 		speedSlider.setInverted(true);
 		Hashtable<Integer, JLabel> labelTable = new Hashtable<Integer, JLabel>();
 		labelTable.put(new Integer(MAX_SPEED), new JLabel("Fast"));
@@ -104,6 +105,11 @@ public class KnightsTourControlPanel extends JPanel {
 		this.add(speedSlider);
 		this.add(randomModeRadioButton);
 		this.add(algorithmModeRadioButton);
+	}
+
+	public void pause() {
+		startButton.setText("Start");
+		currentlyPlaying = false;
 	}
 
 	boolean currentlyPlaying = false;
