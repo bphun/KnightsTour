@@ -138,10 +138,18 @@ public class KnightsTourControlPanel extends JPanel {
 	}
 
 	private void randomModeRadioButtonAction() {
-		knightsTour.updateMode();
+		knightsTour.updateMode(true);
+		if (randomModeRadioButton.isSelected()) {
+			algorithmModeRadioButton.setSelected(false);
+		}
 	}
 
 	private void algorithmModeRadioButtonAction() {
-		knightsTour.updateMode();
+		knightsTour.updateMode(false);
+		if (algorithmModeRadioButton.isSelected()) {
+			randomModeRadioButton.setSelected(false);
+		}
 	}
+
+
 }
