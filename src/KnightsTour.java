@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
 import java.util.HashMap;
+import java.util.Collections;
 
 public class KnightsTour {
 
@@ -92,6 +93,7 @@ public class KnightsTour {
 	}
 
 	public boolean step() {
+		printGrid();
 		if (!containsSelectedSquare()) {
 			JOptionPane.showMessageDialog(null, "You must select a square on the grid before continuing.");
 			return false;
@@ -141,9 +143,8 @@ public class KnightsTour {
 
 				panel.setGrid(grid);
 
-				iterations[newRow][newCol] = ++currIteration;
-				panel.setIteration(newRow, newCol, currIteration);
-				// printGrid();
+				updateIterations(newRow, newCol);
+				
 				break;
 			}
 		}
@@ -151,29 +152,35 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
-		int newRow;
-		int newCol;
 		int numMovesAvailable = numMovesAvailable();
-
-		if (moves.size() > 0) {
-			Location location = moves.get(new Integer(currIteration));
-			updateLocation(location.y(), location.x());
-			return true;
-		}
 
 		while (true) {
 			if (numMovesAvailable() <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
 				return false; 
 			}
-			newRow = (int)(Math.random() * ROWS);
-			newCol = (int)(Math.random() * COLS);
 
-			if (canMakeMove(newRow, newCol)) {
-				moves.put(new Integer(moves.size()), new Location(newRow, newCol));
+			for (int r = 0; r < ROWS; r++) {
+				for (int c = 0; c < COLS; c++) {
+					if (((r != currentRow) && (c != currentCol)) && canMakeMove(r, c)) {
+						moves.put(new Integer(moves.size()), new Location(r, c));
+					}
+				}
 			}
-			if (numMovesAvailable == moves.size()) {
-				updateLocation(newRow, newCol);
+
+			if (moves.size() == numMovesAvailable) {
+				Location optimalMove = moves.get(new Integer(0));
+				double distance = optimalMove.distanceTo(currentCol, currentRow);
+				for (Location location : moves.values()) {
+					double d = location.distanceTo(currentCol, currentRow);
+					if ((location.distanceTo(currentCol, currentRow) < distance)) {
+						optimalMove = location;
+						distance = d;
+					}
+				}
+
+				updateLocation(optimalMove.y(), optimalMove.x());
+
 				break;
 			}
 		}
@@ -181,10 +188,16 @@ public class KnightsTour {
 	}
 
 	private void updateLocation(int newRow, int newCol) {
-		grid[newRow][newCol] = 1;
 		grid[currentRow][currentCol] = 0;
+		grid[newRow][newCol] = 1;
 		currentRow = newRow;
 		currentCol = newCol;
+		updateIterations(newRow, newCol);
+	}
+
+	private void updateIterations(int row, int col) {
+		iterations[row][col] = ++currIteration;
+		panel.setIteration(row, col, currIteration);
 	}
 
 	private void pause() {
@@ -206,6 +219,7 @@ public class KnightsTour {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 
 	private boolean containsSelectedSquare() {
