@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
+import java.util.HashMap;
 
 public class KnightsTour {
 
@@ -31,6 +32,8 @@ public class KnightsTour {
 	private int currentCol;
 	private int currIteration;
 
+	private HashMap<Integer, Location> moves = new HashMap<>();
+
 	public static void main(String[] args) {
 		new KnightsTour().start();
 	}
@@ -39,6 +42,7 @@ public class KnightsTour {
 		grid = new int[ROWS][COLS];
 		initializeIterationGrid();
 		randomMode = true;
+		moves = new HashMap<>();
 		frame = new JFrame("Knights Tour");
 		panel = new KnightsTourPanel(this, grid, iterations);
 		frame.add(panel);	
@@ -109,8 +113,8 @@ public class KnightsTour {
 		playTimer.start();
 	}
 
-	public void updateMode() {
-		randomMode = !randomMode;
+	public void updateMode(boolean randomMode) {
+		this.randomMode = randomMode;
 	}
 
 	public void play() {
@@ -128,17 +132,12 @@ public class KnightsTour {
 		while (true) {
 			if (numMovesAvailable() <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
-				
 				return false;
 			}
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
 			if (canMakeMove(newRow, newCol)) {
-				grid[newRow][newCol] = 1;
-				grid[currentRow][currentCol] = 0;
-
-				currentRow = newRow;
-				currentCol = newCol;
+				updateLocation(newRow, newCol);
 
 				panel.setGrid(grid);
 
@@ -152,7 +151,40 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
+		int newRow;
+		int newCol;
+		int numMovesAvailable = numMovesAvailable();
+
+		if (moves.size() > 0) {
+			Location location = moves.get(new Integer(currIteration));
+			updateLocation(location.y(), location.x());
+			return true;
+		}
+
+		while (true) {
+			if (numMovesAvailable() <= 0) { 
+				JOptionPane.showMessageDialog(null, "There are no more available moves");
+				return false; 
+			}
+			newRow = (int)(Math.random() * ROWS);
+			newCol = (int)(Math.random() * COLS);
+
+			if (canMakeMove(newRow, newCol)) {
+				moves.put(new Integer(moves.size()), new Location(newRow, newCol));
+			}
+			if (numMovesAvailable == moves.size()) {
+				updateLocation(newRow, newCol);
+				break;
+			}
+		}
 		return true;
+	}
+
+	private void updateLocation(int newRow, int newCol) {
+		grid[newRow][newCol] = 1;
+		grid[currentRow][currentCol] = 0;
+		currentRow = newRow;
+		currentCol = newCol;
 	}
 
 	private void pause() {
