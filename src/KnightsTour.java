@@ -169,15 +169,16 @@ public class KnightsTour {
 			}
 
 			if (moves.size() == numMovesAvailable) {
-				Location optimalMove = moves.get(new Integer(0));
-				double distance = optimalMove.distanceTo(currentCol, currentRow);
-				for (Location location : moves.values()) {
-					double d = location.distanceTo(currentCol, currentRow);
-					if ((location.distanceTo(currentCol, currentRow) < distance)) {
-						optimalMove = location;
-						distance = d;
-					}
-				}
+				// Location optimalMove = moves.get(new Integer(0));
+				// double distance = optimalMove.distanceTo(currentCol, currentRow);
+				// for (Location location : moves.values()) {
+				// 	double d = location.distanceTo(currentCol, currentRow);
+				// 	if ((location.distanceTo(currentCol, currentRow) < distance)) {
+				// 		optimalMove = location;
+				// 		distance = d;
+				// 	}
+				// }
+				Location optimalMove = Collections.min(moves.values());
 
 				updateLocation(optimalMove.y(), optimalMove.x());
 
