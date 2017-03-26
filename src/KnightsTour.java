@@ -7,6 +7,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.Dimension;
 import javax.swing.JOptionPane;
+import java.util.HashMap;
+import java.util.Collections;
 
 public class KnightsTour {
 
@@ -31,6 +33,8 @@ public class KnightsTour {
 	private int currentCol;
 	private int currIteration;
 
+	private HashMap<Integer, Location> moves = new HashMap<>();
+
 	public static void main(String[] args) {
 		new KnightsTour().start();
 	}
@@ -39,6 +43,7 @@ public class KnightsTour {
 		grid = new int[ROWS][COLS];
 		initializeIterationGrid();
 		randomMode = true;
+		moves = new HashMap<>();
 		frame = new JFrame("Knights Tour");
 		panel = new KnightsTourPanel(this, grid, iterations);
 		frame.add(panel);	
@@ -88,6 +93,7 @@ public class KnightsTour {
 	}
 
 	public boolean step() {
+		printGrid();
 		if (!containsSelectedSquare()) {
 			JOptionPane.showMessageDialog(null, "You must select a square on the grid before continuing.");
 			return false;
@@ -109,8 +115,8 @@ public class KnightsTour {
 		playTimer.start();
 	}
 
-	public void updateMode() {
-		randomMode = !randomMode;
+	public void updateMode(boolean randomMode) {
+		this.randomMode = randomMode;
 	}
 
 	public void play() {
@@ -126,25 +132,19 @@ public class KnightsTour {
 		int newCol;
 
 		while (true) {
-			if (numMovesAvailable() <= 0) { 
+			if (numMovesAvailable(currentRow, currentCol) <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
-				
 				return false;
 			}
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
-			if (canMakeMove(newRow, newCol)) {
-				grid[newRow][newCol] = 1;
-				grid[currentRow][currentCol] = 0;
-
-				currentRow = newRow;
-				currentCol = newCol;
+			if (canMakeMove(currentRow, newRow, currentCol, newCol)) {
+				updateLocation(newRow, newCol);
 
 				panel.setGrid(grid);
 
-				iterations[newRow][newCol] = ++currIteration;
-				panel.setIteration(newRow, newCol, currIteration);
-				// printGrid();
+				updateIterations(newRow, newCol);
+				
 				break;
 			}
 		}
@@ -152,7 +152,35 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
+		int numMovesAvailable = numMovesAvailable(currentRow, currentCol);
+		int newRow, newCol;
+
+		// Only checks the number of possbiel moves from the user's starting position
+		while (true) {
+			if (numMovesAvailable(currentRow, currentCol) <= 0) { 
+				JOptionPane.showMessageDialog(null, "There are no more available moves");
+				return false; 
+			}
+
+			newRow = (int)(Math.random() * ROWS);
+			newCol = (int)(Math.random() * COLS);
+
+			
+		}
 		return true;
+	}
+
+	private void updateLocation(int newRow, int newCol) {
+		grid[currentRow][currentCol] = 0;
+		grid[newRow][newCol] = 1;
+		currentRow = newRow;
+		currentCol = newCol;
+		updateIterations(newRow, newCol);
+	}
+
+	private void updateIterations(int row, int col) {
+		iterations[row][col] = ++currIteration;
+		panel.setIteration(row, col, currIteration);
 	}
 
 	private void pause() {
@@ -174,6 +202,7 @@ public class KnightsTour {
 			}
 			System.out.println();
 		}
+		System.out.println();
 	}
 
 	private boolean containsSelectedSquare() {
@@ -187,11 +216,11 @@ public class KnightsTour {
 		return false;
 	}
 
-	private int numMovesAvailable() {
+	private int numMovesAvailable(int row, int col) {
 		int numMoves = 0;
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
-				if (canMakeMove(r, c)) {
+				if (canMakeMove(row, r, col, c)) {
 					numMoves++;
 				}
 			}
@@ -199,10 +228,10 @@ public class KnightsTour {
 		return numMoves;
 	}
 
-	private boolean canMakeMove(int newRow, int newCol) {
+	private boolean canMakeMove(int startRow, int startCol, int newRow, int newCol) {
 		if (iterations[newRow][newCol] > -1) { return false; }
-		int row = Math.abs(newRow - currentRow);
-		int col = Math.abs(newCol - currentCol);
+		int row = Math.abs(newRow - startRow);
+		int col = Math.abs(newCol - startCol);
 		return ((row == 2 && col == 1) || (row == 1 && col == 2));
 	}
 
