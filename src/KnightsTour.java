@@ -165,17 +165,7 @@ public class KnightsTour {
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
 
-			Location newLoc = new Location(newCol, newRow);
-			if (canMakeMove(currentRow, currentCol, newRow, newCol) && (!moves.containsValue(newLoc))) {
-				moves.put(moves.size(), newLoc);
-			}
-
-			if (moves.size() == numMovesAvailable) {
-				Location optimalMove = Collections.min(moves.values());
-				updateLocation(optimalMove.y(), optimalMove.x());
-	
-				break;
-			}
+			
 		}
 		return true;
 	}
