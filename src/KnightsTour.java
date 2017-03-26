@@ -132,13 +132,13 @@ public class KnightsTour {
 		int newCol;
 
 		while (true) {
-			if (numMovesAvailable() <= 0) { 
+			if (numMovesAvailable(currentRow, currentCol) <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
 				return false;
 			}
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
-			if (canMakeMove(newRow, newCol)) {
+			if (canMakeMove(currentRow, newRow, currentCol, newCol)) {
 				updateLocation(newRow, newCol);
 
 				panel.setGrid(grid);
@@ -152,36 +152,28 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
-		int numMovesAvailable = numMovesAvailable();
+		int numMovesAvailable = numMovesAvailable(currentRow, currentCol);
+		int newRow, newCol;
 
+		// Only checks the number of possbiel moves from the user's starting position
 		while (true) {
-			if (numMovesAvailable() <= 0) { 
+			if (numMovesAvailable(currentRow, currentCol) <= 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
 				return false; 
 			}
 
-			for (int r = 0; r < ROWS; r++) {
-				for (int c = 0; c < COLS; c++) {
-					if (((r != currentRow) && (c != currentCol)) && canMakeMove(r, c)) {
-						moves.put(new Integer(moves.size()), new Location(r, c));
-					}
-				}
+			newRow = (int)(Math.random() * ROWS);
+			newCol = (int)(Math.random() * COLS);
+
+			Location newLoc = new Location(newCol, newRow);
+			if (canMakeMove(currentRow, currentCol, newRow, newCol) && (!moves.containsValue(newLoc))) {
+				moves.put(moves.size(), newLoc);
 			}
 
 			if (moves.size() == numMovesAvailable) {
-				// Location optimalMove = moves.get(new Integer(0));
-				// double distance = optimalMove.distanceTo(currentCol, currentRow);
-				// for (Location location : moves.values()) {
-				// 	double d = location.distanceTo(currentCol, currentRow);
-				// 	if ((location.distanceTo(currentCol, currentRow) < distance)) {
-				// 		optimalMove = location;
-				// 		distance = d;
-				// 	}
-				// }
 				Location optimalMove = Collections.min(moves.values());
-
 				updateLocation(optimalMove.y(), optimalMove.x());
-
+	
 				break;
 			}
 		}
@@ -234,11 +226,11 @@ public class KnightsTour {
 		return false;
 	}
 
-	private int numMovesAvailable() {
+	private int numMovesAvailable(int row, int col) {
 		int numMoves = 0;
 		for (int r = 0; r < ROWS; r++) {
 			for (int c = 0; c < COLS; c++) {
-				if (canMakeMove(r, c)) {
+				if (canMakeMove(row, r, col, c)) {
 					numMoves++;
 				}
 			}
@@ -246,10 +238,10 @@ public class KnightsTour {
 		return numMoves;
 	}
 
-	private boolean canMakeMove(int newRow, int newCol) {
+	private boolean canMakeMove(int startRow, int startCol, int newRow, int newCol) {
 		if (iterations[newRow][newCol] > -1) { return false; }
-		int row = Math.abs(newRow - currentRow);
-		int col = Math.abs(newCol - currentCol);
+		int row = Math.abs(newRow - startRow);
+		int col = Math.abs(newCol - startCol);
 		return ((row == 2 && col == 1) || (row == 1 && col == 2));
 	}
 
