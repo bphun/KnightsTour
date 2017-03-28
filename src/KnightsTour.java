@@ -228,7 +228,7 @@ public class KnightsTour {
 		return numMoves;
 	}
 
-	private boolean canMakeMove(int startRow, int startCol, int newRow, int newCol) {
+	private boolean canMakeMove(int startRow, int newRow, int startCol, int newCol) {
 		if (iterations[newRow][newCol] > -1) { return false; }
 		int row = Math.abs(newRow - startRow);
 		int col = Math.abs(newCol - startCol);
