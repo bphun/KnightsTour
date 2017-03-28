@@ -107,6 +107,11 @@ public class KnightsTourPanel extends JPanel {
 		controlPanel.pause();
 	}
 
+	public void setIterations(int[][] iterations) {
+		this.iterations = iterations;
+		repaint();
+	}
+
 	/* add the mouse listener.  This will only work for the 
 	 * first click, and then after the first click, there should
 	 * be no more mouse listening!

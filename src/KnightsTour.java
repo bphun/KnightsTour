@@ -33,8 +33,6 @@ public class KnightsTour {
 	private int currentCol;
 	private int currIteration;
 
-	private HashMap<Integer, Location> moves = new HashMap<>();
-
 	public static void main(String[] args) {
 		new KnightsTour().start();
 	}
@@ -43,7 +41,6 @@ public class KnightsTour {
 		grid = new int[ROWS][COLS];
 		initializeIterationGrid();
 		randomMode = true;
-		moves = new HashMap<>();
 		frame = new JFrame("Knights Tour");
 		panel = new KnightsTourPanel(this, grid, iterations);
 		frame.add(panel);	
@@ -93,7 +90,7 @@ public class KnightsTour {
 	}
 
 	public boolean step() {
-		printGrid();
+		printGrid(this.grid);
 		if (!containsSelectedSquare()) {
 			JOptionPane.showMessageDialog(null, "You must select a square on the grid before continuing.");
 			return false;
@@ -107,6 +104,8 @@ public class KnightsTour {
 
 	public void clear() {
 		this.grid = new int[ROWS][COLS];
+		initializeIterationGrid();
+		panel.setIterations(this.iterations);
 	}
 
 	public void updateSpeed(int newSpeed) {
@@ -138,13 +137,15 @@ public class KnightsTour {
 			}
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
-			if (canMakeMove(currentRow, newRow, currentCol, newCol)) {
+			// if (canMakeMove(currentRow, newRow, currentCol, newCol)) {
+			// 	updateLocation(newRow, newCol);
+			// 	panel.setGrid(grid);
+
+			// 	break;
+			// }
+			if (canMakeMove(newRow, newCol)) {
 				updateLocation(newRow, newCol);
-
 				panel.setGrid(grid);
-
-				updateIterations(newRow, newCol);
-				
 				break;
 			}
 		}
@@ -152,12 +153,14 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
+		HashMap<Integer, Location> moves = new HashMap<>();
 		int numMovesAvailable = numMovesAvailable(currentRow, currentCol);
 		int newRow, newCol;
 
-		// Only checks the number of possbiel moves from the user's starting position
+		System.out.println("numMovesAvailable: " + numMovesAvailable);
+
 		while (true) {
-			if (numMovesAvailable(currentRow, currentCol) <= 0) { 
+			if (numMovesAvailable(currentRow, currentCol) == 0) { 
 				JOptionPane.showMessageDialog(null, "There are no more available moves");
 				return false; 
 			}
@@ -165,7 +168,18 @@ public class KnightsTour {
 			newRow = (int)(Math.random() * ROWS);
 			newCol = (int)(Math.random() * COLS);
 
-			
+			Location l = new Location(newCol, newRow);
+			if (canMakeMove(currentRow, newRow, currentCol, newCol) && (!moves.containsValue(l))) {
+				moves.put(numMovesAvailable(newRow, newCol), l);
+			}
+
+			// System.out.println("moves.size(): " + moves.size());
+			if (moves.size() == numMovesAvailable) {
+				Location bestLocation = moves.get(Collections.max(moves.keySet()));
+
+				updateLocation(bestLocation.y(), bestLocation.x());
+				break;
+			}
 		}
 		return true;
 	}
@@ -188,7 +202,7 @@ public class KnightsTour {
 		panel.pause();
 	}
 
-	private void printGrid() {
+	private void printGrid(int[][] grid) {
 		for (int[] r : grid) {
 			for (int c : r) {
 				switch (c) {
@@ -216,6 +230,25 @@ public class KnightsTour {
 		return false;
 	}
 
+	private int numMovesAvailable() {
+		int numMoves = 0;
+		for (int r = 0; r < ROWS; r++) {
+			for (int c = 0; c < COLS; c++) {
+				if (canMakeMove(r, c)) {
+					numMoves++;
+				}
+			}
+		}
+		return numMoves;
+	}
+
+	private boolean canMakeMove(int newRow, int newCol) {
+		if (iterations[newRow][newCol] > -1) { return false; }
+		int row = Math.abs(newRow - currentRow);
+		int col = Math.abs(newCol - currentCol);
+		return ((row == 2 && col == 1) || (row == 1 && col == 2));
+	}
+
 	private int numMovesAvailable(int row, int col) {
 		int numMoves = 0;
 		for (int r = 0; r < ROWS; r++) {
@@ -228,7 +261,7 @@ public class KnightsTour {
 		return numMoves;
 	}
 
-	private boolean canMakeMove(int startRow, int startCol, int newRow, int newCol) {
+	private boolean canMakeMove(int startRow, int newRow, int startCol, int newCol) {
 		if (iterations[newRow][newCol] > -1) { return false; }
 		int row = Math.abs(newRow - startRow);
 		int col = Math.abs(newCol - startCol);
