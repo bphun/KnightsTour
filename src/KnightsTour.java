@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import javax.swing.JOptionPane;
 import java.util.HashMap;
 import java.util.Collections;
+import java.util.Map;
 
 public class KnightsTour {
 
@@ -106,6 +107,7 @@ public class KnightsTour {
 		this.grid = new int[ROWS][COLS];
 		initializeIterationGrid();
 		panel.setIterations(this.iterations);
+		panel.canSelectSquare();
 	}
 
 	public void updateSpeed(int newSpeed) {
@@ -153,7 +155,8 @@ public class KnightsTour {
 	}
 
 	private boolean algorithmMove() {
-		HashMap<Integer, Location> moves = new HashMap<>();
+		// HashMap<Integer, Location> moves = new HashMap<>();
+		HashMap<Location, Integer> moves = new HashMap<>();
 		int numMovesAvailable = numMovesAvailable(currentRow, currentCol);
 		int newRow, newCol;
 
@@ -169,15 +172,21 @@ public class KnightsTour {
 			newCol = (int)(Math.random() * COLS);
 
 			Location l = new Location(newCol, newRow);
-			if (canMakeMove(currentRow, newRow, currentCol, newCol) && (!moves.containsValue(l))) {
-				moves.put(numMovesAvailable(newRow, newCol), l);
+			if (canMakeMove(currentRow, newRow, currentCol, newCol) && (!moves.containsKey(l))) {
+				moves.put(l, numMovesAvailable(newRow, newCol));
 			}
 
-			// System.out.println("moves.size(): " + moves.size());
 			if (moves.size() == numMovesAvailable) {
-				Location bestLocation = moves.get(Collections.max(moves.keySet()));
+				Integer key = Collections.min(moves.values());
+				Location bestLocation = null;
+				for (Map.Entry<Location, Integer> map : moves.entrySet()) {
+					if (map.getValue().equals(key)) {
+						bestLocation = map.getKey();
+					}
+				}
 
 				updateLocation(bestLocation.y(), bestLocation.x());
+
 				break;
 			}
 		}

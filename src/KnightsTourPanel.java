@@ -107,6 +107,10 @@ public class KnightsTourPanel extends JPanel {
 		controlPanel.pause();
 	}
 
+	public void canSelectSquare() {
+		canSelectSquare = true;
+	}
+
 	public void setIterations(int[][] iterations) {
 		this.iterations = iterations;
 		repaint();
