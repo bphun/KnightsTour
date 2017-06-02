@@ -101,7 +101,11 @@ public class KnightsTour {
 		if (!containsSelectedSquare()) {
 			JOptionPane.showMessageDialog(null, "You must select a square on the grid before continuing.");
 			return false;
+		} else if (finishedGame()) {
+			JOptionPane.showMessageDialog(null, "The Knight has visited every square on the grid... You Win!");
+			return false;
 		}
+
 		if (randomMode) {
 			return randomMove();
 		} else {
@@ -174,6 +178,17 @@ public class KnightsTour {
 		playTimer.start();
 	}
 
+	private boolean finishedGame() {
+		for (int[] r : iterations) {
+			for (int c : r ) {
+				if (c == -1) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	/*
 	 * Moves the knight to any of the possible new locations that it is 
 	 * permitted to move to according to the rules of a Knight chess piece 
@@ -213,10 +228,7 @@ public class KnightsTour {
 
 		while (true) {
 			//	No point in doing all the stuff below if there are no moves remaining
-			if (numMovesAvailable(currentRow, currentCol) == 0) { 
-				JOptionPane.showMessageDialog(null, "There are no more available moves");
-				return false; 
-			}
+  
 
 			// Populate the 'moves' map with possible locations that the knight can move to  
 			for (int r = 0; r < ROWS; r++) {
